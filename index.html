@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guess the Song 🎵 | Emoji & Symbol Song Guessing Game</title>
+  <meta name="description" content="Can you decode popular Hindi, Telugu, and English songs using emojis? Play Guess the Song, the ultimate AI-powered song decoding game!">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-dark">
+  <!-- Background Animated Orbs & Grid -->
+  <div class="bg-glow-container" aria-hidden="true">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+    <div class="bg-grid-overlay"></div>
+  </div>
+
+  <!-- Confetti Canvas overlay -->
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Top Global Bar -->
+    <header class="app-header glass-card">
+      <div class="logo-container" id="logo-btn" role="button" tabindex="0">
+        <span class="logo-icon">🎵</span>
+        <div class="logo-text">
+          <h1>Guess the Song</h1>
+          <span class="badge badge-genai">AI Powered 🤖</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound (Mute/Unmute)" aria-label="Toggle Sound">
+          <span class="sound-icon">🔊</span>
+        </button>
+        <button id="ai-mode-header-btn" class="btn btn-sm btn-outline-neon">
+          🤖 AI Challenge
+        </button>
+        <button id="leaderboard-header-btn" class="icon-btn" title="Leaderboard" aria-label="View Leaderboard">
+          🏆
+        </button>
+      </div>
+    </header>
+
+    <!-- Main View Container -->
+    <main id="main-content" class="main-content">
+      
+      <!-- ================= 1. HOME SCREEN ================= -->
+      <section id="screen-home" class="screen screen-active">
+        <div class="hero-section glass-card">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span> Hindi • Telugu • English
+          </div>
+          <h2 class="hero-title">Decode Songs using <span class="gradient-text">Emojis & Clues</span></h2>
+          <p class="hero-subtitle">Test your music IQ! Combine emojis, symbols, and character hints to guess iconic blockbuster songs.</p>
+          
+          <div class="emoji-preview-ticker" aria-hidden="true">
+            <span class="ticker-item">🌧️ ❤️ ☕ ➔ Tum Hi Ho</span>
+            <span class="ticker-item">🕺 🕺 🪵 💨 ➔ Naatu Naatu</span>
+            <span class="ticker-item">📦 🫵 🧍‍♀️ ➕ ➔ Shape of You</span>
+            <span class="ticker-item">🧡 🌺 👩‍❤️‍👨 ➔ Kesariya</span>
+            <span class="ticker-item">👣 👸 🚶‍♂️ ➔ Samajavaragamana</span>
+          </div>
+
+          <div class="home-action-buttons">
+            <button id="start-game-btn" class="btn btn-xl btn-primary-neon">
+              <span>🎮 Start Game</span>
+            </button>
+            <button id="ai-challenge-btn" class="btn btn-xl btn-secondary-neon">
+              <span>🤖 AI Challenge</span>
+            </button>
+            <button id="how-to-play-btn" class="btn btn-xl btn-glass">
+              <span>📖 How to Play</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Language Quick Highlights -->
+        <div class="features-grid">
+          <div class="feature-card glass-card" data-lang="hindi">
+            <div class="feature-icon">🇮🇳</div>
+            <h3>Hindi Superhits</h3>
+            <p>Bollywood romantic tracks, high-energy party anthems, and timeless classics.</p>
+            <span class="tag">12+ Songs</span>
+          </div>
+
+          <div class="feature-card glass-card" data-lang="telugu">
+            <div class="feature-icon">🪷</div>
+            <h3>Telugu Chartbusters</h3>
+            <p>Tollywood blockbusters, Oscar-winning dance beats, and soulful melodies.</p>
+            <span class="tag">12+ Songs</span>
+          </div>
+
+          <div class="feature-card glass-card" data-lang="english">
+            <div class="feature-icon">🇬🇧</div>
+            <h3>Global English Hits</h3>
+            <p>Billboard top hits, viral pop sensations, and legendary rock anthems.</p>
+            <span class="tag">12+ Songs</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. SETUP SCREEN ================= -->
+      <section id="screen-setup" class="screen">
+        <div class="setup-container glass-card">
+          <div class="setup-header">
+            <h2>Game Setup ⚙️</h2>
+            <p>Customize your language, difficulty, and game mode.</p>
+          </div>
+
+          <form id="game-setup-form" onsubmit="return false;">
+            <!-- 1. Language Selection -->
+            <div class="form-group">
+              <label class="form-label">1. Choose Song Language 🌍</label>
+              <div class="choice-grid language-selector">
+                <label class="choice-card selected">
+                  <input type="radio" name="language" value="mixed" checked>
+                  <span class="choice-emoji">🌎</span>
+                  <span class="choice-title">Mixed Mode</span>
+                  <span class="choice-desc">Hindi + Telugu + English</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="language" value="hindi">
+                  <span class="choice-emoji">🇮🇳</span>
+                  <span class="choice-title">Hindi</span>
+                  <span class="choice-desc">Bollywood Classics</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="language" value="telugu">
+                  <span class="choice-emoji">🪷</span>
+                  <span class="choice-title">Telugu</span>
+                  <span class="choice-desc">Tollywood Blockbusters</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="language" value="english">
+                  <span class="choice-emoji">🇬🇧</span>
+                  <span class="choice-title">English</span>
+                  <span class="choice-desc">Global Chartbusters</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 2. Game Mode Selection -->
+            <div class="form-group">
+              <label class="form-label">2. Select Game Mode 🎮</label>
+              <div class="choice-grid mode-selector">
+                <label class="choice-card selected">
+                  <input type="radio" name="mode" value="classic" checked>
+                  <span class="choice-emoji">🎯</span>
+                  <span class="choice-title">Classic Mode</span>
+                  <span class="choice-desc">10 curated questions. Play at your own pace!</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="mode" value="timeattack">
+                  <span class="choice-emoji">⚡</span>
+                  <span class="choice-title">Time Attack</span>
+                  <span class="choice-desc">60 Seconds countdown! How many can you score?</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="mode" value="streak">
+                  <span class="choice-emoji">🔥</span>
+                  <span class="choice-title">Streak Mode</span>
+                  <span class="choice-desc">Endless mode! One wrong answer ends the run.</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 3. Difficulty Level -->
+            <div class="form-group">
+              <label class="form-label">3. Select Difficulty Level 📊</label>
+              <div class="choice-grid difficulty-selector">
+                <label class="choice-card selected">
+                  <input type="radio" name="difficulty" value="all" checked>
+                  <span class="choice-emoji">🌈</span>
+                  <span class="choice-title">All Levels</span>
+                  <span class="choice-desc">Balanced mix of Easy, Medium & Hard</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="difficulty" value="easy">
+                  <span class="choice-emoji">🟢</span>
+                  <span class="choice-title">Easy</span>
+                  <span class="choice-desc">Obvious & direct emoji hints</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="difficulty" value="medium">
+                  <span class="choice-emoji">🟡</span>
+                  <span class="choice-title">Medium</span>
+                  <span class="choice-desc">Requires clever thinking</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="difficulty" value="hard">
+                  <span class="choice-emoji">🔴</span>
+                  <span class="choice-title">Hard</span>
+                  <span class="choice-desc">Abstract symbols & wordplay</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 4. Question Format -->
+            <div class="form-group">
+              <label class="form-label">4. Input Preference ⌨️</label>
+              <div class="input-type-toggle">
+                <label class="toggle-card selected">
+                  <input type="radio" name="input_type" value="text" checked>
+                  <span>⌨️ Type Answer (Keyboard)</span>
+                </label>
+                <label class="toggle-card">
+                  <input type="radio" name="input_type" value="mcq">
+                  <span>🔘 Multiple Choice (4 Options)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="setup-actions">
+              <button type="button" id="back-to-home-btn" class="btn btn-lg btn-glass">⬅️ Back</button>
+              <button type="button" id="launch-game-btn" class="btn btn-lg btn-primary-neon">🚀 Launch Game</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= 3. GAMEPLAY SCREEN ================= -->
+      <section id="screen-game" class="screen">
+        <div class="game-container">
+          
+          <!-- Top Game Stats Bar -->
+          <div class="game-header-bar glass-card">
+            <div class="stat-box">
+              <span class="stat-label">Progress</span>
+              <span id="game-progress-text" class="stat-value">Q 1 / 10</span>
+            </div>
+
+            <div class="stat-box highlight-box">
+              <span class="stat-label">Score</span>
+              <span id="game-score-text" class="stat-value">0</span>
+            </div>
+
+            <div class="stat-box">
+              <span class="stat-label">Streak</span>
+              <span id="game-streak-text" class="stat-value">🔥 0</span>
+            </div>
+
+            <!-- Timer Box (visible in Time Attack) -->
+            <div id="game-timer-box" class="stat-box timer-box hidden">
+              <span class="stat-label">Time Left</span>
+              <div class="timer-display">
+                <span id="game-timer-text" class="timer-seconds">60</span>s
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-bar-container glass-card">
+            <div id="game-progress-fill" class="progress-bar-fill" style="width: 10%;"></div>
+          </div>
+
+          <!-- Central Song Clue Card -->
+          <div id="clue-card" class="clue-card glass-card">
+            <div class="clue-meta-header">
+              <span id="clue-lang-tag" class="badge badge-lang">🇮🇳 Hindi</span>
+              <span id="clue-diff-tag" class="badge badge-diff-easy">🟢 Easy</span>
+              <span id="clue-points-possible" class="badge badge-points">+10 Points</span>
+            </div>
+
+            <div class="clue-prompt-header">
+              <h3>🎵 DECODE THIS SONG 🎵</h3>
+            </div>
+
+            <!-- Emoji Display Box -->
+            <div class="emoji-display-container">
+              <div id="clue-emoji-display" class="emoji-clue-text">
+                🌧️ ❤️ ☕ 🎶
+              </div>
+              <div id="clue-symbol-text" class="symbol-clue-text hidden">
+                <!-- Optional symbol/character clue -->
+              </div>
+            </div>
+
+            <!-- Hints Section -->
+            <div id="hints-wrapper" class="hints-wrapper">
+              <div id="hint-1-box" class="hint-box hidden">
+                <span class="hint-tag">💡 Hint 1 (-3 pts):</span>
+                <span id="hint-1-text" class="hint-content">...</span>
+              </div>
+              <div id="hint-2-box" class="hint-box hidden">
+                <span class="hint-tag">💡 Hint 2 (-5 pts total):</span>
+                <span id="hint-2-text" class="hint-content">...</span>
+              </div>
+            </div>
+
+            <!-- Answer Section (Text Input OR MCQ) -->
+            <div id="answer-section" class="answer-section">
+              <!-- Text Input Mode -->
+              <div id="text-answer-mode" class="input-group-custom">
+                <input type="text" id="song-answer-input" class="form-input-neon" placeholder="Type song title (e.g. Tum Hi Ho)..." autocomplete="off">
+                <button id="submit-answer-btn" class="btn btn-primary-neon btn-submit">
+                  <span>Submit ➔</span>
+                </button>
+              </div>
+
+              <!-- MCQ Options Grid Mode -->
+              <div id="mcq-answer-mode" class="mcq-grid hidden">
+                <button class="mcq-option-btn glass-card" data-option="0">
+                  <span class="mcq-badge">A</span>
+                  <span class="mcq-text">Option 1</span>
+                </button>
+                <button class="mcq-option-btn glass-card" data-option="1">
+                  <span class="mcq-badge">B</span>
+                  <span class="mcq-text">Option 2</span>
+                </button>
+                <button class="mcq-option-btn glass-card" data-option="2">
+                  <span class="mcq-badge">C</span>
+                  <span class="mcq-text">Option 3</span>
+                </button>
+                <button class="mcq-option-btn glass-card" data-option="3">
+                  <span class="mcq-badge">D</span>
+                  <span class="mcq-text">Option 4</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Feedback Alert Banner -->
+            <div id="feedback-banner" class="feedback-banner hidden">
+              <div id="feedback-icon" class="feedback-icon">✅</div>
+              <div class="feedback-details">
+                <h4 id="feedback-title">Correct!</h4>
+                <p id="feedback-desc">Song: <strong>Tum Hi Ho</strong> (Aashiqui 2)</p>
+              </div>
+            </div>
+
+            <!-- Controls Row: Hint, Skip, Next -->
+            <div class="game-action-controls">
+              <button id="hint-btn" class="btn btn-md btn-warning-neon">
+                💡 Reveal Hint
+              </button>
+              <button id="skip-btn" class="btn btn-md btn-glass">
+                ⏭️ Skip Question
+              </button>
+              <button id="next-question-btn" class="btn btn-md btn-primary-neon hidden">
+                Next Question ➔
+              </button>
+            </div>
+
+          </div> <!-- /#clue-card -->
+
+        </div>
+      </section>
+
+      <!-- ================= 4. RESULTS SCREEN ================= -->
+      <section id="screen-results" class="screen">
+        <div class="results-container glass-card">
+          <div class="results-header">
+            <div class="trophy-bounce">🎉</div>
+            <h2 id="results-headline">Game Complete!</h2>
+            <p id="results-rank-title" class="rank-title-badge">👑 Musical Genius</p>
+          </div>
+
+          <!-- Score Card Display -->
+          <div class="results-score-card">
+            <div class="big-score-display">
+              <span id="final-score-value">85</span>
+              <span class="score-label">Total Points</span>
+            </div>
+
+            <div class="stats-mini-grid">
+              <div class="mini-stat">
+                <span class="mini-label">Accuracy</span>
+                <span id="stat-accuracy" class="mini-val">90%</span>
+              </div>
+              <div class="mini-stat">
+                <span class="mini-label">Correct</span>
+                <span id="stat-correct" class="mini-val">9 / 10</span>
+              </div>
+              <div class="mini-stat">
+                <span class="mini-label">Max Streak</span>
+                <span id="stat-max-streak" class="mini-val">🔥 5</span>
+              </div>
+              <div class="mini-stat">
+                <span class="mini-label">Hints Used</span>
+                <span id="stat-hints-used" class="mini-val">2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question History Accordion/Summary -->
+          <div class="summary-section">
+            <h3>Round Summary</h3>
+            <div id="round-summary-list" class="summary-list scrollable">
+              <!-- Dynamically populated question cards -->
+            </div>
+          </div>
+
+          <!-- Results Actions -->
+          <div class="results-actions">
+            <button id="play-again-btn" class="btn btn-lg btn-primary-neon">🔄 Play Again</button>
+            <button id="results-home-btn" class="btn btn-lg btn-glass">🏠 Home Screen</button>
+            <button id="save-score-btn" class="btn btn-lg btn-secondary-neon">🏆 Save Highscore</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= 5. AI CHALLENGE SCREEN ================= -->
+      <section id="screen-ai-challenge" class="screen">
+        <div class="ai-challenge-container glass-card">
+          <div class="ai-header">
+            <div class="ai-title-group">
+              <span class="ai-robot-anim">🤖</span>
+              <div>
+                <h2>Generative AI Song Decoder</h2>
+                <p>Enter any song name, and our Generative AI will turn it into a custom Emoji & Symbol puzzle for players to solve!</p>
+              </div>
+            </div>
+            
+            <button id="ai-config-toggle-btn" class="btn btn-sm btn-glass">⚙️ API Settings</button>
+          </div>
+
+          <!-- Optional Gemini API Key Drawer -->
+          <div id="ai-api-drawer" class="api-drawer glass-card hidden">
+            <h4>Gemini API Settings (Optional)</h4>
+            <p>By default, our built-in Smart Semantic AI Engine encodes songs instantly. You can also paste your Google Gemini API key below to query live LLM models!</p>
+            <div class="api-input-group">
+              <input type="password" id="gemini-api-key-input" class="form-input-neon" placeholder="Paste Gemini API Key (e.g. AIzaSy...)">
+              <button id="save-api-key-btn" class="btn btn-sm btn-primary-neon">Save Key</button>
+            </div>
+            <span id="api-status-msg" class="api-status">Status: Using Built-in Semantic AI Engine</span>
+          </div>
+
+          <!-- Song Generator Input Panel -->
+          <div class="ai-generator-panel">
+            <div class="ai-input-box">
+              <label for="ai-song-input" class="form-label">Song Title to Encode:</label>
+              <div class="input-group-custom">
+                <input type="text" id="ai-song-input" class="form-input-neon" placeholder="e.g. Natu Natu, Kesariya, Shape of You, Tum Hi Ho..." autocomplete="off">
+                <button id="generate-ai-clue-btn" class="btn btn-primary-neon">
+                  <span>✨ Generate AI Puzzle</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Suggestion Pills -->
+            <div class="quick-pills">
+              <span>Try quick suggestions:</span>
+              <button class="ai-pill" data-song="Kesariya">Kesariya</button>
+              <button class="ai-pill" data-song="Naatu Naatu">Naatu Naatu</button>
+              <button class="ai-pill" data-song="Samajavaragamana">Samajavaragamana</button>
+              <button class="ai-pill" data-song="Channa Mereya">Channa Mereya</button>
+              <button class="ai-pill" data-song="Blinding Lights">Blinding Lights</button>
+              <button class="ai-pill" data-song="Despacito">Despacito</button>
+            </div>
+          </div>
+
+          <!-- Generated AI Result Card -->
+          <div id="ai-result-card" class="ai-result-card glass-card hidden">
+            <div class="ai-card-badge">✨ GenAI Generated Clue</div>
+
+            <div class="ai-emoji-output-box">
+              <span class="output-label">AI Generated Emoji Puzzle:</span>
+              <div id="ai-output-emojis" class="ai-output-emojis">
+                <!-- Emojis populated by JS -->
+              </div>
+            </div>
+
+            <div class="ai-meta-grid">
+              <div class="ai-meta-item">
+                <span class="meta-title">💡 Generated Hint 1:</span>
+                <span id="ai-output-hint1" class="meta-val">...</span>
+              </div>
+              <div class="ai-meta-item">
+                <span class="meta-title">💡 Generated Hint 2:</span>
+                <span id="ai-output-hint2" class="meta-val">...</span>
+              </div>
+            </div>
+
+            <!-- Test Playing the AI Generated Clue -->
+            <div class="ai-play-test">
+              <h4>🎯 Test Your Friends or Play Now!</h4>
+              <div class="input-group-custom">
+                <input type="text" id="ai-guess-input" class="form-input-neon" placeholder="Guess the generated song..." autocomplete="off">
+                <button id="submit-ai-guess-btn" class="btn btn-secondary-neon">Test Guess</button>
+              </div>
+              <div id="ai-guess-feedback" class="feedback-banner hidden"></div>
+            </div>
+          </div>
+
+          <div class="ai-back-bar">
+            <button id="ai-back-btn" class="btn btn-lg btn-glass">⬅️ Back to Home</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. LEADERBOARD MODAL/SCREEN ================= -->
+      <section id="screen-leaderboard" class="screen">
+        <div class="leaderboard-container glass-card">
+          <div class="lb-header">
+            <h2>🏆 Leaderboard</h2>
+            <p>Top emoji song decoders across all game modes</p>
+          </div>
+
+          <div class="lb-filters">
+            <button class="lb-filter-btn active" data-filter="all">All Modes</button>
+            <button class="lb-filter-btn" data-filter="classic">Classic</button>
+            <button class="lb-filter-btn" data-filter="timeattack">Time Attack</button>
+            <button class="lb-filter-btn" data-filter="streak">Streak</button>
+          </div>
+
+          <div class="lb-table-wrapper">
+            <table class="lb-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th>
+                  <th>Mode</th>
+                  <th>Streak</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="lb-table-body">
+                <!-- Dynamically filled -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="lb-actions">
+            <button id="lb-close-btn" class="btn btn-lg btn-glass">Close</button>
+            <button id="lb-reset-btn" class="btn btn-lg btn-warning-neon">Reset Board</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modal Dialog for "How to Play" -->
+    <div id="modal-howtoplay" class="modal-overlay hidden">
+      <div class="modal-card glass-card">
+        <div class="modal-header">
+          <h3>📖 How to Play</h3>
+          <button id="close-howtoplay-btn" class="modal-close-icon">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="rule-item">
+            <span class="rule-num">1</span>
+            <div>
+              <h4>Decode Emojis & Symbols</h4>
+              <p>Each level displays a creative arrangement of emojis and symbols representing a song title, story, or hook step.</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-num">2</span>
+            <div>
+              <h4>Multi-Language Songs</h4>
+              <p>Choose between <strong>Hindi 🇮🇳</strong>, <strong>Telugu 🪷</strong>, <strong>English 🇬🇧</strong>, or <strong>Mixed Mode 🌎</strong>.</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-num">3</span>
+            <div>
+              <h4>Scoring & Hints</h4>
+              <p>Get <strong>+10 points</strong> for a direct answer. Using Hint 1 grants <strong>+7 pts</strong>, and Hint 2 grants <strong>+5 pts</strong>. Build your streak for multiplier bonuses!</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-num">4</span>
+            <div>
+              <h4>Game Modes</h4>
+              <p>Try 🎯 <strong>Classic (10 Qs)</strong>, ⚡ <strong>Time Attack (60s timer)</strong>, 🔥 <strong>Streak Mode (Endless)</strong>, or 🤖 <strong>AI Challenge Mode</strong>!</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="gotit-btn" class="btn btn-primary-neon btn-block">Got It! Let's Play 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Guess the Song 🎵 • Created for Generative AI Workshop • Built with HTML5, CSS3 & Web Audio</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/songs-db.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/ai-generator.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
